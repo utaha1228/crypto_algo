@@ -2,17 +2,19 @@ import math
 from factordb.factordb import FactorDB
 
 class PohligHellman:
-	def __init__(self, p, g = None):
+	def __init__(self, p, g = None, fac = None):
 		self.p = p
-		self.fac = None
-		try:
-			f = FactorDB(p - 1)
-			f.connect()
-			tmp = f.get_factor_from_api()
-			self.fac = [(int(x[0]), x[1]) for x in tmp]
-		except:
-			print("Cannot factor (p - 1).")
-			raise
+		if fac :
+			self.fac = fac
+		else:
+			try:
+				f = FactorDB(p - 1)
+				f.connect()
+				tmp = f.get_factor_from_api()
+				self.fac = [(int(x[0]), x[1]) for x in tmp]
+			except:
+				print("Cannot factor (p - 1).")
+				raise
 
 		if g:
 			self.g = g
