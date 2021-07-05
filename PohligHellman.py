@@ -2,7 +2,7 @@ import math
 from factordb.factordb import FactorDB
 
 class PohligHellman:
-	def __init__(self, p, g = None, fac = None):
+	def __init__(self, p, fac = None):
 		self.p = p
 		if fac :
 			self.fac = fac
@@ -15,11 +15,6 @@ class PohligHellman:
 			except:
 				print("Cannot factor (p - 1).")
 				raise
-
-		if g:
-			self.g = g
-		else:
-			self.g = self.get_primitive_root()
 
 	def is_primitive_root(self, g):
 		for q, e in self.fac:
@@ -34,10 +29,16 @@ class PohligHellman:
 			g += 1	
 		return g
 
-	def get_discrete_log(self, x):
+	def get_discrete_log(self, x, g = None):
+		if g == None:
+			try:
+				g = self.smallest_primitive_root
+			except:
+				self.smallest_primitive_root = self.get_primitive_root()
+				g = self.smallest_primitive_root
+
 		rem = []
 		p = self.p
-		g = self.g
 		for q, e in self.fac:
 			b = pow(g, (p - 1) // q, p)
 			sq = int(math.sqrt(q)) + 1
@@ -56,7 +57,7 @@ class PohligHellman:
 					y = u * pow(x, -1, p) % p
 					if y in big_step_dict:
 						return (big_step_dict[y] * sq + i) % q
-				print("Cannot find discrete log")
+				print(f"Cannot find discrete log when q = {q}")
 				raise
 
 			r = 0
