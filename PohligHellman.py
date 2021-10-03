@@ -29,7 +29,7 @@ class PohligHellman:
 			g += 1	
 		return g
 
-	def get_discrete_log(self, x, g = None):
+	def get_discrete_log(self, x, g=None, debug=False):
 		if g == None:
 			try:
 				g = self.smallest_primitive_root
@@ -40,6 +40,8 @@ class PohligHellman:
 		rem = []
 		p = self.p
 		for q, e in self.fac:
+			if debug:
+				print(q, e)
 			b = pow(g, (p - 1) // q, p)
 			sq = int(math.sqrt(q)) + 1
 			small_step = [1]
@@ -70,7 +72,8 @@ class PohligHellman:
 				pw = pw * q
 
 			rem.append((pw, r))
-
+		if debug: 
+			print(rem)
 		ans = 0
 		for q, r in rem:
 			coe = r * pow((p - 1) // q, -1, q)
