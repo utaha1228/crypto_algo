@@ -28,4 +28,4 @@ def wiener_attack(N: int, e: int):
 			return p, q, d
 
 	print("Failed to perform Wiener Attack.")
-	raise
+	return

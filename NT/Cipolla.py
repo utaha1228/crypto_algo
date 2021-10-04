@@ -1,11 +1,12 @@
 import random
-def Cipolla(n, p):
-	def isResidue(x):
+
+def sqrt_mod_p(n, p):
+	def is_residue(x):
 		return pow(x, (p - 1) // 2, p) == 1
 
 	while True:
 		a = random.randint(1, p - 1)
-		if not isResidue((a * a - n) % p):
+		if not is_residue((a * a - n) % p):
 			break
 
 	def mul(x, y):
