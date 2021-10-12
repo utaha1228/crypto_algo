@@ -1,5 +1,6 @@
 import math
 from factordb.factordb import FactorDB
+import random
 
 class PohligHellman:
 	def __init__(self, p, fac = None):
@@ -81,3 +82,49 @@ class PohligHellman:
 
 		ans %= (p - 1)
 		return ans
+
+
+def sqrt_mod_p(n, p):
+	def is_residue(x):
+		return pow(x, (p - 1) // 2, p) == 1
+
+	while True:
+		a = random.randint(1, p - 1)
+		if not is_residue((a * a - n) % p):
+			break
+
+	def mul(x, y):
+		return ((x[0] * y[0] + x[1] * y[1] * (a * a - n)) % p, (x[0] * y[1] + x[1] * y[0]) % p)
+
+	def exp(x, n):
+		ret = (1, 0)
+		while n:
+			if n & 1:
+				ret = mul(ret, x)
+			n >>= 1
+			x = mul(x, x)
+		return ret
+
+	return exp((a, 1), (p + 1) // 2)[0]
+
+def crt(ls):
+	rem = 0
+	mod = 1
+	for q, r in ls:
+		gcd = math.gcd(q, mod)
+		if rem % gcd != r % gcd:
+			return -1
+		rem += mod * ((r - rem) // gcd) * pow(mod // gcd, -1, q // gcd)
+		mod = mod * q // gcd
+		rem %= mod
+	return (mod, rem)
+	
+def solve_quadratic_mod_p(a, b, c, p):
+	D = (b * b - 4 * a * c) % p
+	sD = sqrt_mod_p(D, p)
+	if sD == -1:
+		return []
+	elif sD == 0:
+		return [-b * pow(2 * a, -1, p) % p]
+	else:
+		return [(-b + sD) * pow(2 * a, -1, p) % p, (-b - sD) * pow(2 * a, -1, p) % p]
