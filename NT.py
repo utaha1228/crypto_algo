@@ -84,7 +84,7 @@ class PohligHellman:
 		return ans
 
 
-def sqrt_mod_p(n, p):
+def sqrt_mod_p(n: int, p: int) -> int:
 	def is_residue(x):
 		return pow(x, (p - 1) // 2, p) == 1
 
@@ -107,19 +107,19 @@ def sqrt_mod_p(n, p):
 
 	return exp((a, 1), (p + 1) // 2)[0]
 
-def crt(ls):
+def crt(ls: list) -> tuple:
 	rem = 0
 	mod = 1
 	for q, r in ls:
 		gcd = math.gcd(q, mod)
 		if rem % gcd != r % gcd:
-			return -1
+			return (-1, -1)
 		rem += mod * ((r - rem) // gcd) * pow(mod // gcd, -1, q // gcd)
 		mod = mod * q // gcd
 		rem %= mod
 	return (mod, rem)
 	
-def solve_quadratic_mod_p(a, b, c, p):
+def solve_quadratic_mod_p(a: int, b: int, c: int, p: int) -> list:
 	D = (b * b - 4 * a * c) % p
 	sD = sqrt_mod_p(D, p)
 	if sD == -1:
