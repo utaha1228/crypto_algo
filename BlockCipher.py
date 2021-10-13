@@ -27,6 +27,20 @@ class GF128Element:
 			x = (x >> 1) ^ ((x & 1) * 0xE1000000000000000000000000000000)
 		return GF128Element(res)
 
+	def __pow__(self, b):
+		assert isinstance(b, int), "GF128Element only support integer exponent"
+		res = GF128Element(1 << 127) # res = x^0
+		a = GF128Element(self.val)
+		while b:
+			if b & 1:
+				res = res * a
+			a = a * a
+			b >>= 1
+		return res
+
+	def inv(self):
+		return self ** ((1 << 128) - 2)
+
 	def get_coefficient(idx: int) -> int:
 		assert 0 <= idx and idx < 128, "Index out of range" # 0-index
 		return (self.val >> (127 - idx)) & 1
@@ -72,6 +86,11 @@ class GCM:
 
 
 ###### Testing ######
+
+# a = GF128Element(0xcafedeadbeef)
+# b = a.inv()
+# print((a * b).val)
+# print((1 << 127))
 
 # master_key = bytes.fromhex('feffe9928665731c6d6a8f9467308308')
 # plaintext = bytes.fromhex('d9313225f88406e5a55909c5aff5269a86a7a9531534f7da2e4c303d8a318a721c3c0c95956809532fcf0e2449a6b525b16aedf5aa0de657ba637b39')
