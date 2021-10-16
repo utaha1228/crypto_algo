@@ -128,3 +128,108 @@ def solve_quadratic_mod_p(a: int, b: int, c: int, p: int) -> list:
 		return [-b * pow(2 * a, -1, p) % p]
 	else:
 		return [(-b + sD) * pow(2 * a, -1, p) % p, (-b - sD) * pow(2 * a, -1, p) % p]
+
+from Crypto.Util.number import sieve_base
+import math
+
+def index_calculus(mod: int, a: int, g: int, max_bases: int =100, debug:bool =False):
+	# require g to be a primitive root, mod to be a prime
+	bases = sieve_base[:max_bases]
+	while bases[-1] >= mod:
+		bases = bases[:-1]
+	max_bases = len(bases)
+
+	equations = [[] for i in range(max_bases)]
+	equation_count = 0
+
+	exponent = 0
+	_num = 1
+	while True:
+		exponent += 1
+		_num = _num * g % mod
+
+		cnt = [0] * max_bases
+		num = _num
+		for i, base in enumerate(bases):
+			while num % base == 0:
+				num //= base
+				cnt[i] += 1
+
+		if num != 1:
+			continue
+
+		cnt += [exponent]
+		for i in range(max_bases):
+			if cnt[i] > 0 and len(equations[i]) == 0:
+				equations[i] = cnt
+				equation_count += 1
+				if debug:
+					print(f'Found {cnt} = {_num}')
+				break
+
+			if cnt[i] == 0:
+				continue
+
+			_gcd = math.gcd(cnt[i], equations[i][i]) # cnt <= log_2(mod) --> _gcd <= log_2(mod)
+			mul = equations[i][i] // _gcd
+			cnt = [x * mul for x in cnt]
+			mul = cnt[i] // equations[i][i]
+			cnt = [(x - mul * y) % (mod - 1) for x, y in zip(cnt, equations[i])]
+
+		if equation_count == max_bases:
+			break
+
+	if debug:
+		print("=" * 20)
+		for x in equations:
+			print(x)
+		print("=" * 20)
+	for i in range(max_bases - 1, -1, -1):
+		for j in range(i + 1, max_bases):
+			equations[i][-1] = (equations[i][-1] - equations[i][j] * equations[j][-1]) % (p - 1)
+			equations[i][j] = 0
+		_gcd = math.gcd(equations[i][i], mod - 1)
+		assert equations[i][-1] % _gcd == 0
+		sol = (equations[i][-1] // _gcd) * pow(equations[i][i] // _gcd, -1, (mod - 1) // _gcd) % ((mod - 1) // _gcd)
+		while pow(g, sol, mod) != bases[i]:
+			assert sol < mod
+			sol += (mod - 1) // _gcd
+
+		equations[i][i] = 1
+		equations[i][-1] = sol
+
+	if debug:
+		print("=" * 20)
+		for x in equations:
+			print(x)
+		print("=" * 20)
+
+	addend = 0
+	_num = a
+	while True:
+		cnt = [0] * max_bases
+		num = _num
+		for i, base in enumerate(bases):
+			while num % base == 0:
+				num //= base
+				cnt[i] += 1
+
+		if num != 1:
+			addend += 1
+			_num = _num * g % mod
+			continue
+
+		return (sum(equations[i][-1] * cnt[i] for i in range(max_bases)) - addend) % (mod - 1)
+
+
+######## Testing ########
+
+# for i in range(10):
+# 	g = 5
+# 	p = 97
+# 	ans = random.randint(1, p)
+# 	assert pow(g, (p - 1) // 2, p) != 1
+# 	assert pow(g, (p - 1) // 3, p) != 1
+# 	assert index_calculus(p, pow(g, ans, p), g, 5) == ans
+
+
