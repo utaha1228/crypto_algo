@@ -56,6 +56,10 @@ solve_quadratic_mod_p(a: int, b; int, c: int, p: int) -> List
 
 With factordb API, first create a `PohligHellman` class by passing in the prime `p` with optional factorization of `(p-1)`. Then the `get_discrete_log` function can solve the discrete log problem.
 
+#### Index Calculus
+
+A toy model with no optimization. It is correct but still under construction.
+
 ### RSA
 
 #### Wiener Attack
