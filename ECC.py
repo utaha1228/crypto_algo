@@ -30,8 +30,7 @@ class EllipticCurve:
 		elif (A.y + B.y) % self.p == 0 and A.x == B.x:
 			return Point(Point.O.x, Point.O.y)
 		else:
-			lmbda = (self.a + 3 * A.x * A.x) * pow(2 * A.y, -1, self.p) if A.x == B.x
-					else (B.y - A.y) * pow(B.x - A.x, -1, self.p) % p
+			lmbda = (self.a + 3 * A.x * A.x) * pow(2 * A.y, -1, self.p) if A.x == B.x else (B.y - A.y) * pow(B.x - A.x, -1, self.p) % p
 			x = (lmbda * lmbda - A.x - B.x) % p
 			y = (lmbda * (A.x - x) - A.y) % p
 			return Point(x, y)
