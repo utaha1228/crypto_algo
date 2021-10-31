@@ -29,3 +29,6 @@ def wiener_attack(N: int, e: int):
 
 	print("Failed to perform Wiener Attack.")
 	return
+
+def boneh_durfee_attack(N: int, e: int):
+	# https://github.com/mimoo/RSA-and-LLL-attacks/blob/master/boneh_durfee.sage
